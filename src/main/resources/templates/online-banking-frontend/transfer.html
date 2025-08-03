@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transfer Money</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <style>
+    body {
+      background-color: #eef2f7;
+    }
+    .container {
+      max-width: 500px;
+      margin-top: 60px;
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    .form-title {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 25px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h3 class="form-title">Transfer Money</h3>
+    <form id="transferForm">
+      <div class="mb-3">
+        <label for="fromUserId" class="form-label">Your User ID</label>
+        <input type="number" class="form-control" id="fromUserId" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="toUserId" class="form-label">Recipient User ID</label>
+        <input type="number" class="form-control" id="toUserId" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="amount" class="form-label">Amount</label>
+        <input type="number" class="form-control" id="amount" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Transfer</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("transferForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const fromUserId = document.getElementById("fromUserId").value;
+      const toUserId = document.getElementById("toUserId").value;
+      const amount = document.getElementById("amount").value;
+
+      try {
+        const response = await fetch(`/api/transaction/transfer?fromUserId=${fromUserId}&toUserId=${toUserId}&amount=${amount}`, {
+          method: "POST"
+        });
+
+        if (response.ok) {
+          const contentType = response.headers.get("content-type");
+
+          if (contentType && contentType.includes("application/json")) {
+            const result = await response.json();
+            alert("✅ Transfer successful!");
+          } else {
+            const message = await response.text();
+            alert(message); // This might say: ✅ Transfer succeeded, but SMS failed
+          }
+        } else {
+          const errorMsg = await response.text();
+          alert("❌ Transfer failed: " + errorMsg);
+        }
+
+      } catch (error) {
+        console.error("Transfer error:", error);
+        alert("❌ An error occurred. Try again.");
+      }
+    });
+  </script>
+
+</body>
+</html>

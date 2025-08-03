@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View All Users</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .table-container {
+      max-width: 1000px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    .btn-back {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container table-container">
+    <a href="/admin-dashboard" class="btn btn-secondary btn-back">← Back to Dashboard</a>
+    <h3 class="text-center mb-4">All Registered Users</h3>
+
+    <table class="table table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Approved</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <!-- Data will be populated by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    fetch("/api/admin/users")
+      .then(res => res.json())
+      .then(users => {
+        const tableBody = document.getElementById("userTableBody");
+        users.forEach(user => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.fullName}</td>
+            <td>${user.email}</td>
+            <td>${user.phone}</td>
+            <td>${user.status}</td>
+            <td>${user.approved ? "Yes" : "No"}</td>
+            <td>${user.role}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(err => {
+        console.error("Error loading users:", err);
+        alert("❌ Failed to load users.");
+      });
+  </script>
+
+</body>
+</html>

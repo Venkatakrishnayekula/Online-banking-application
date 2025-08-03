@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Withdraw Money - Online Banking</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #f4f8fb;
+    }
+    .withdraw-container {
+      max-width: 500px;
+      margin: 60px auto;
+      background-color: white;
+      padding: 35px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .form-title {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container withdraw-container">
+    <h2 class="form-title">Withdraw Funds</h2>
+    <form id="withdrawForm">
+      <div class="mb-3">
+        <label for="amount" class="form-label">Amount (₹)</label>
+        <input type="number" class="form-control" id="amount" min="1" required>
+      </div>
+
+      <button type="submit" class="btn btn-danger w-100">Withdraw</button>
+    </form>
+  </div>
+
+  <script>
+    const userId = sessionStorage.getItem("userId");
+
+    document.getElementById("withdrawForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const amount = document.getElementById("amount").value;
+
+      if (!userId) {
+        alert("User ID not found. Please log in again.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/transaction/withdraw/${userId}?amount=${amount}`, {
+          method: "POST"
+        });
+
+        if (response.ok) {
+          alert("✅ Withdrawal successful!");
+          document.getElementById("withdrawForm").reset();
+        } else {
+          const msg = await response.text();
+          alert("❌ Failed to withdraw: " + msg);
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        alert("❌ An error occurred while withdrawing.");
+      }
+    });
+  </script>
+
+</body>
+</html>
